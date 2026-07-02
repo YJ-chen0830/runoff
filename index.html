@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>逕流廢水計畫</title>
+<style>
+  :root{--navy:#0b1f3a;--navy2:#13284a;--gold:#c9a14a;--gold2:#e0bf6e;--bg:#f5f3ee;--ink:#1c2530;--line:#d8d2c2;}
+  *{box-sizing:border-box;}
+  body{margin:0;font-family:"Noto Sans TC","Segoe UI",sans-serif;background:var(--bg);color:var(--ink);}
+  header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#f5f3ee;padding:28px 32px;}
+  header h1{margin:0;font-size:22px;}
+  header span{color:var(--gold2);font-size:13px;display:block;margin-top:4px;}
+  main{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+  .tabs{display:flex;gap:8px;margin-bottom:20px;}
+  .tab{padding:9px 20px;border:2px solid var(--navy);border-radius:7px;cursor:pointer;font-weight:600;font-size:14px;background:#fff;color:var(--navy);}
+  .tab.active{background:var(--navy);color:#fff;}
+  .panel{display:none;}.panel.active{display:block;}
+  .grid{display:grid;grid-template-columns:400px 1fr;gap:24px;}
+  @media(max-width:860px){.grid{grid-template-columns:1fr;}}
+  .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
+  .card h2{font-size:15px;margin:0 0 14px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:8px;}
+  label{display:block;font-size:12.5px;color:#555;margin:10px 0 4px;}
+  input,select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;background:#fafaf8;}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  button{margin-top:16px;width:100%;padding:11px;border:none;border-radius:7px;background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+  button:hover{background:var(--navy2);}
+  table{width:100%;border-collapse:collapse;margin-top:8px;}
+  td,th{padding:7px 6px;border-bottom:1px solid #eee;font-size:13px;}
+  th{background:#f5f3ee;font-weight:600;color:var(--navy);font-size:12px;text-align:left;}
+  td:last-child{text-align:right;font-weight:600;}
+  .note{font-size:12px;color:#888;margin-top:12px;line-height:1.7;}
+  .sec{font-size:13px;font-weight:700;color:var(--navy);margin:14px 0 4px;border-left:3px solid var(--gold);padding-left:8px;}
+  ul.chk{padding-left:18px;}ul.chk li{font-size:13px;margin:5px 0;}
+  details.proc{margin-top:14px;border:1px solid var(--line);border-radius:8px;background:#fafaf8;}
+  details.proc summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:13px;color:var(--navy);user-select:none;}
+  details.proc pre{margin:0;padding:10px 16px 14px;font-family:"Courier New",monospace;font-size:11.5px;line-height:1.85;white-space:pre-wrap;color:#2c3e50;border-top:1px solid var(--line);}
+</style>
+</head>
+<body>
+<header>
+  <h1>逕流廢水計畫 (Construction Site Runoff Plan)</h1>
+  <span>合理化公式 Q=CIA · Stokes 沉砂池 · 防治計畫要項</span>
+</header>
+<main>
+  <div class="tabs">
+    <div class="tab active" onclick="sw('flow')">逕流量估算</div>
+    <div class="tab" onclick="sw('basin')">沉砂池設計</div>
+    <div class="tab" onclick="sw('plan')">防治計畫要項</div>
+  </div>
+
+  <div id="panel-flow" class="panel active">
+  <div class="grid">
+    <div class="card">
+      <h2>逕流量計算（合理化公式）</h2>
+      <div class="row2">
+        <div><label>集水區面積 A (ha)</label><input id="f-A" type="number" value="0.5" step="0.05"></div>
+        <div><label>逕流係數 C</label>
+          <select id="f-C">
+            <option value="0.90">裸露/工地 0.90</option>
+            <option value="0.75">礫石停車場 0.75</option>
+            <option value="0.65">草地 0.65</option>
+            <option value="0.50">樹林 0.50</option>
+            <option value="0.95">瀝青鋪面 0.95</option>
+            <option value="custom">自訂</option>
+          </select>
+        </div>
+      </div>
+      <div id="f-Ccustom" style="display:none">
+        <label>自訂 C</label><input id="f-Cval" type="number" value="0.8" step="0.01">
+      </div>
+      <div class="row2">
+        <div><label>重現期（僅供參考）</label>
+          <select id="f-T"><option value="2">2年</option><option value="5">5年</option>
+            <option value="10" selected>10年</option><option value="25">25年</option></select>
+        </div>
+        <div><label>集流時間 tc (min)</label><input id="f-tc" type="number" value="15"></div>
+      </div>
+      <label>設計雨強 I (mm/hr)（0=使用Sherman公式）</label>
+      <input id="f-I" type="number" value="0" step="1" placeholder="0=使用公式">
+      <label>Sherman公式係數 a（I=a/(tc+b)^c，b=9,c=0.65）</label>
+      <input id="f-a" type="number" value="1600">
+      <button onclick="calcFlow()">計算逕流量</button>
+    </div>
+    <div class="card">
+      <h2>逕流量結果</h2>
+      <div id="f-result"><p style="color:#888">尚未計算</p></div>
+      <details class="proc" id="f-proc-box" style="display:none">
+        <summary>📋 計算過程（供第三方檢核）</summary>
+        <pre id="f-proc-text"></pre>
+      </details>
+    </div>
+  </div>
+  </div>
+
+  <div id="panel-basin" class="panel">
+  <div class="grid">
+    <div class="card">
+      <h2>沉砂池設計（Stokes法）</h2>
+      <label>設計流量 Q (m³/s)</label>
+      <input id="b-Q" type="number" value="0.05" step="0.005">
+      <div class="row2">
+        <div><label>目標沉降粒徑 d (mm)</label>
+          <select id="b-d">
+            <option value="0.02">0.02mm（細粉砂）</option>
+            <option value="0.05" selected>0.05mm（粗粉砂）</option>
+            <option value="0.1">0.1mm（細砂）</option>
+            <option value="0.2">0.2mm（中砂）</option>
+          </select>
+        </div>
+        <div><label>水溫 (°C)</label><input id="b-T" type="number" value="25"></div>
+      </div>
+      <div class="row2">
+        <div><label>長寬比 L/W（建議2~4）</label><input id="b-LW" type="number" value="3" step="0.5"></div>
+        <div><label>有效深度 H (m)</label><input id="b-H" type="number" value="1.5" step="0.1"></div>
+      </div>
+      <label>安全係數 FS（建議1.5~2.0）</label>
+      <input id="b-FS" type="number" value="1.75" step="0.25">
+      <button onclick="calcBasin()">計算沉砂池</button>
+    </div>
+    <div class="card">
+      <h2>沉砂池結果</h2>
+      <div id="b-result"><p style="color:#888">尚未計算</p></div>
+      <details class="proc" id="b-proc-box" style="display:none">
+        <summary>📋 計算過程（供第三方檢核）</summary>
+        <pre id="b-proc-text"></pre>
+      </details>
+    </div>
+  </div>
+  </div>
+
+  <div id="panel-plan" class="panel">
+  <div class="card" style="max-width:800px">
+    <h2>逕流廢水防治計畫要項</h2>
+    <div class="sec">法令依據</div>
+    <ul class="chk">
+      <li>水土保持法§12：開挖面積>0.5ha應擬具水保計畫</li>
+      <li>建築法§70-1：施工中逕流廢水應設截水溝及沉砂池</li>
+      <li>水污染防治法§14：工地廢水不得逕排入水體</li>
+    </ul>
+    <div class="sec">周界截流措施</div>
+    <ul class="chk">
+      <li>周界截水溝（開挖前先設，斷面依設計流量）</li>
+      <li>進出口洗車台（40cm礫石+斜坡板）</li>
+      <li>施工圍籬底部封閉防地表水外溢</li>
+    </ul>
+    <div class="sec">沉砂池操作維護</div>
+    <ul class="chk">
+      <li>大雨後24hr內清除積泥（超過池深1/3需清除）</li>
+      <li>出水口設溢流管（φ≥100mm）</li>
+      <li>施工日誌每日記錄降雨量及水位</li>
+    </ul>
+  </div>
+  </div>
+</main>
+<script>
+function sw(id){
+  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['flow','basin','plan'][i]===id));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('panel-'+id).classList.add('active');
+}
+document.getElementById('f-C').addEventListener('change',function(){
+  document.getElementById('f-Ccustom').style.display=this.value==='custom'?'':'none';
+});
+
+function calcFlow(){
+  const A=+document.getElementById('f-A').value;
+  const Csel=document.getElementById('f-C').value;
+  const C=Csel==='custom'?+document.getElementById('f-Cval').value:parseFloat(Csel);
+  const tc=+document.getElementById('f-tc').value;
+  const Iinput=+document.getElementById('f-I').value;
+  const a=+document.getElementById('f-a').value;
+
+  const I_formula=a/Math.pow(tc+9,0.65);
+  const I=Iinput>0?Iinput:I_formula;
+  const Q=C*I*A/360;
+
+  document.getElementById('f-result').innerHTML=`
+    <table>
+      <tr><td>集水面積 A (ha)</td><td>${A}</td></tr>
+      <tr><td>逕流係數 C</td><td>${C}</td></tr>
+      <tr><td>集流時間 tc (min)</td><td>${tc}</td></tr>
+      <tr><td>雨強 I (mm/hr)</td><td>${I.toFixed(2)}</td></tr>
+      <tr><td><strong>設計流量 Q (m³/s)</strong></td><td><strong>${Q.toFixed(5)}</strong></td></tr>
+      <tr><td>Q (L/s)</td><td>${(Q*1000).toFixed(2)}</td></tr>
+      <tr><td>Q (m³/min)</td><td>${(Q*60).toFixed(4)}</td></tr>
+    </table>`;
+
+  const proc=`════════════════════════════════════════
+逕流量估算 計算過程
+方法：合理化公式（Rational Method）
+════════════════════════════════════════
+
+【一、輸入參數】
+  集水面積 A = ${A} ha
+  逕流係數 C = ${C}
+  集流時間 tc = ${tc} min
+
+【二、設計雨強 I（mm/hr）】
+${Iinput>0?`  直接輸入 I = ${Iinput} mm/hr`:`  Sherman 公式：I = a / (tc+b)^c
+  I = ${a} / (${tc}+9)^0.65
+    = ${a} / ${Math.pow(tc+9,0.65).toFixed(4)}
+    = ${I_formula.toFixed(4)} mm/hr
+  採用 I = ${I.toFixed(4)} mm/hr`}
+
+【三、合理化公式 Q = C × I × A / 360】
+  Q = ${C} × ${I.toFixed(4)} × ${A} / 360
+    = ${(C*I*A).toFixed(5)} / 360
+    = ${Q.toFixed(6)} m³/s
+    = ${(Q*1000).toFixed(3)} L/s
+    = ${(Q*60).toFixed(5)} m³/min
+
+  公式說明：
+    Q（m³/s）= C × I（mm/hr）× A（ha）/ 360
+    換算係數 360 = 3600s/hr × 10（1ha=10,000m²，1mm=0.001m → 10m³/(ha·mm)）
+
+【四、注意事項】
+  • 合理化公式假設：均勻降雨、穩定流、集水區面積不超過 80 ha
+  • 設計重現期建議：施工臨時設施取 10 年（最大 25 年）
+  • 實際設計應依當地縣市水利主管機關公告之 IDF 曲線查取雨強`;
+
+  document.getElementById('f-proc-text').textContent=proc;
+  document.getElementById('f-proc-box').style.display='';
+}
+
+function calcBasin(){
+  const Q=+document.getElementById('b-Q').value;
+  const d_mm=parseFloat(document.getElementById('b-d').value);
+  const d=d_mm/1000;
+  const T=+document.getElementById('b-T').value;
+  const LW=+document.getElementById('b-LW').value;
+  const H=+document.getElementById('b-H').value;
+  const FS=+document.getElementById('b-FS').value;
+
+  const mu=1.002e-3*Math.exp(-0.02337*(T-20));
+  const gs=2650*9.81;
+  const gw=1000*9.81;
+  const vs=(gs-gw)*d*d*9.81/(18*mu);
+
+  const As=Q*FS/vs;
+  const W=Math.sqrt(As/LW);
+  const Llen=W*LW;
+  const V=As*H;
+  const t_res=V/Q/60;
+
+  document.getElementById('b-result').innerHTML=`
+    <table>
+      <tr><td>沉降粒徑 d (mm)</td><td>${d_mm}</td></tr>
+      <tr><td>動黏滯係數 μ (Pa·s)</td><td>${mu.toExponential(3)}</td></tr>
+      <tr><td>沉降速度 vs (mm/s)</td><td>${(vs*1000).toFixed(5)}</td></tr>
+      <tr><td><strong>長 L (m)</strong></td><td><strong>${Llen.toFixed(2)}</strong></td></tr>
+      <tr><td><strong>寬 W (m)</strong></td><td><strong>${W.toFixed(2)}</strong></td></tr>
+      <tr><td><strong>深 H (m)</strong></td><td><strong>${H}</strong></td></tr>
+      <tr><td>容積 V (m³)</td><td>${V.toFixed(2)}</td></tr>
+      <tr><td>水力停留時間 HRT (min)</td><td>${t_res.toFixed(1)}</td></tr>
+    </table>`;
+
+  const proc=`════════════════════════════════════════
+沉砂池設計 計算過程
+方法：Stokes 沉降速度法
+════════════════════════════════════════
+
+【一、輸入參數】
+  設計流量 Q = ${Q} m³/s
+  目標沉降粒徑 d = ${d_mm} mm = ${d} m
+  水溫 T = ${T} °C
+  長寬比 L/W = ${LW}
+  有效深度 H = ${H} m
+  安全係數 FS = ${FS}
+
+【二、動黏滯係數 μ（水溫修正）】
+  μ = 1.002×10⁻³ × exp[-0.02337×(T-20)]
+    = 1.002×10⁻³ × exp[-0.02337×(${T}-20)]
+    = 1.002×10⁻³ × exp(${(-0.02337*(T-20)).toFixed(4)})
+    = 1.002×10⁻³ × ${Math.exp(-0.02337*(T-20)).toFixed(5)}
+    = ${mu.toExponential(5)} Pa·s
+
+【三、Stokes 沉降速度 vs】
+  公式：vs = (γs-γw) × d² × g / (18 × μ)
+  γs = ρs × g = 2650 × 9.81 = ${gs.toFixed(0)} N/m³（土顆粒，Gs=2.65）
+  γw = ρw × g = 1000 × 9.81 = ${gw.toFixed(0)} N/m³
+
+  vs = (${gs.toFixed(0)}-${gw.toFixed(0)}) × ${d}² × 9.81 / (18 × ${mu.toExponential(4)})
+     = ${(gs-gw).toFixed(0)} × ${(d*d).toExponential(4)} × 9.81 / ${(18*mu).toExponential(4)}
+     = ${((gs-gw)*d*d*9.81).toExponential(4)} / ${(18*mu).toExponential(4)}
+     = ${vs.toExponential(5)} m/s
+     = ${(vs*1000).toFixed(5)} mm/s
+  （Stokes 定律適用條件：Re < 1，層流沉降）
+  Re = ρw×vs×d/μ = 1000×${vs.toExponential(3)}×${d}/${mu.toExponential(3)} = ${(1000*vs*d/mu).toFixed(4)}（應<1）
+
+【四、沉砂池表面積 As】
+  理論：水面流速 ≤ vs，即 Q/As ≤ vs → As ≥ Q/vs
+  含安全係數：
+  As = Q × FS / vs
+     = ${Q} × ${FS} / ${vs.toExponential(5)}
+     = ${As.toFixed(4)} m²
+
+【五、沉砂池尺寸（長寬比 L/W = ${LW}）】
+  W = √(As / (L/W)) = √(${As.toFixed(4)} / ${LW})
+    = √${(As/LW).toFixed(4)} = ${W.toFixed(3)} m
+
+  L = W × L/W = ${W.toFixed(3)} × ${LW} = ${Llen.toFixed(3)} m
+
+  有效容積 V = As × H = ${As.toFixed(4)} × ${H} = ${V.toFixed(3)} m³
+
+  水力停留時間 HRT = V / Q = ${V.toFixed(3)} / ${Q} = ${(V/Q).toFixed(1)} s = ${t_res.toFixed(2)} min
+
+【六、設計建議】
+  沉砂池尺寸 = ${Llen.toFixed(1)} m（長）× ${W.toFixed(1)} m（寬）× ${H} m（深）
+  清泥標準：積泥超過 ${(H*0.33).toFixed(2)} m（有效深1/3）或雨後24hr內清除`;
+
+  document.getElementById('b-proc-text').textContent=proc;
+  document.getElementById('b-proc-box').style.display='';
+}
+</script>
+</body>
+</html>
