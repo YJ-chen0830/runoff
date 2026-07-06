@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>逕流廢水計畫</title>
+<title>逕流廢水計畫 | Runoff & Sedimentation Design</title>
 <style>
   :root{--navy:#0b1f3a;--navy2:#13284a;--gold:#c9a14a;--gold2:#e0bf6e;--bg:#f5f3ee;--ink:#1c2530;--line:#d8d2c2;}
   *{box-sizing:border-box;}
@@ -11,306 +11,409 @@
   header{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#f5f3ee;padding:28px 32px;}
   header h1{margin:0;font-size:22px;}
   header span{color:var(--gold2);font-size:13px;display:block;margin-top:4px;}
-  main{max-width:1100px;margin:0 auto;padding:28px 20px 60px;}
+  main{max-width:1060px;margin:0 auto;padding:28px 20px 60px;}
   .tabs{display:flex;gap:8px;margin-bottom:20px;}
   .tab{padding:9px 20px;border:2px solid var(--navy);border-radius:7px;cursor:pointer;font-weight:600;font-size:14px;background:#fff;color:var(--navy);}
   .tab.active{background:var(--navy);color:#fff;}
   .panel{display:none;}.panel.active{display:block;}
-  .grid{display:grid;grid-template-columns:400px 1fr;gap:24px;}
-  @media(max-width:860px){.grid{grid-template-columns:1fr;}}
+  .grid{display:grid;grid-template-columns:340px 1fr;gap:24px;}
+  @media(max-width:820px){.grid{grid-template-columns:1fr;}}
   .card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:20px 22px;box-shadow:0 1px 3px rgba(0,0,0,.04);}
   .card h2{font-size:15px;margin:0 0 14px;color:var(--navy);border-bottom:2px solid var(--gold);padding-bottom:8px;}
   label{display:block;font-size:12.5px;color:#555;margin:10px 0 4px;}
   input,select{width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:6px;font-size:14px;background:#fafaf8;}
   .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-  button{margin-top:16px;width:100%;padding:11px;border:none;border-radius:7px;background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
-  button:hover{background:var(--navy2);}
+  button.calc-btn{margin-top:14px;width:100%;padding:11px;border:none;border-radius:7px;background:var(--navy);color:#fff;font-size:15px;font-weight:600;cursor:pointer;}
+  button.calc-btn:hover{background:var(--navy2);}
+  button.pro-btn{margin-top:10px;width:100%;padding:11px;border:none;border-radius:7px;background:var(--gold);color:var(--navy);font-size:15px;font-weight:700;cursor:pointer;}
+  button.pro-btn:hover{filter:brightness(1.07);}
   table{width:100%;border-collapse:collapse;margin-top:8px;}
-  td,th{padding:7px 6px;border-bottom:1px solid #eee;font-size:13px;}
+  td,th{padding:7px 8px;border-bottom:1px solid #eee;font-size:13px;}
   th{background:#f5f3ee;font-weight:600;color:var(--navy);font-size:12px;text-align:left;}
   td:last-child{text-align:right;font-weight:600;}
-  .note{font-size:12px;color:#888;margin-top:12px;line-height:1.7;}
-  .sec{font-size:13px;font-weight:700;color:var(--navy);margin:14px 0 4px;border-left:3px solid var(--gold);padding-left:8px;}
-  ul.chk{padding-left:18px;}ul.chk li{font-size:13px;margin:5px 0;}
+  .ok{color:#1a7d3a;font-weight:700;}.ng{color:#c0392b;font-weight:700;}
+  .sec{font-size:13px;font-weight:700;color:var(--navy);margin:14px 0 6px;border-left:3px solid var(--gold);padding-left:8px;}
+  .note{font-size:12px;color:#888;margin-top:10px;line-height:1.7;}
   details.proc{margin-top:14px;border:1px solid var(--line);border-radius:8px;background:#fafaf8;}
   details.proc summary{cursor:pointer;padding:10px 14px;font-weight:700;font-size:13px;color:var(--navy);user-select:none;}
   details.proc pre{margin:0;padding:10px 16px 14px;font-family:"Courier New",monospace;font-size:11.5px;line-height:1.85;white-space:pre-wrap;color:#2c3e50;border-top:1px solid var(--line);}
+  .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:flex;align-items:center;justify-content:center;padding:20px;}
+  .modal{background:#fff;border-radius:12px;max-width:480px;width:100%;padding:30px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+  .modal h3{margin:0 0 6px;color:var(--navy);font-size:20px;}
+  .modal p{font-size:13.5px;color:#555;line-height:1.7;margin:0 0 18px;}
+  .modal .ko-btn{display:block;width:100%;padding:12px;border:none;border-radius:7px;background:#FF5E5B;color:#fff;font-size:15px;font-weight:700;cursor:pointer;text-align:center;text-decoration:none;margin-bottom:12px;}
+  .modal .cancel-btn{width:100%;padding:10px;border:1px solid #ccc;border-radius:7px;background:#fff;color:#555;font-size:14px;cursor:pointer;}
+  .price-badge{display:inline-block;background:var(--gold);color:var(--navy);font-weight:700;font-size:13px;padding:3px 12px;border-radius:20px;margin-bottom:14px;}
+  .code-row{display:flex;gap:8px;}
+  .code-row input{flex:1;}
+  .code-row button{padding:8px 16px;border:none;border-radius:6px;background:var(--navy);color:#fff;font-size:14px;font-weight:600;cursor:pointer;white-space:nowrap;}
+  .proj-section{background:#fff;border:1px solid var(--gold);border-radius:10px;padding:18px 22px;margin-bottom:20px;}
+  .proj-section h3{margin:0 0 12px;color:var(--navy);font-size:14px;font-weight:700;}
+  .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+  .pro-lock-notice{background:#fff8e6;border:1px solid var(--gold);border-radius:8px;padding:12px 16px;font-size:13px;color:#7a5c00;margin-top:10px;}
+  @media print{
+    header,.tabs,.no-print,details.proc{display:none!important;}
+    body{background:#fff;font-size:12px;}
+    main{padding:0;max-width:100%;}
+    .panel{display:block!important;}
+    .grid{grid-template-columns:1fr!important;}
+    .card{box-shadow:none;border:1px solid #ccc;break-inside:avoid;}
+    .print-header{display:flex!important;}
+    .print-footer{display:block!important;}
+    button{display:none!important;}
+    @page{margin:18mm 15mm;size:A4;}
+  }
+  .print-header{display:none;align-items:center;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
+  .print-footer{display:none;margin-top:30px;border-top:1px solid #ccc;padding-top:10px;font-size:10px;color:#888;}
 </style>
 </head>
 <body>
 <header>
-  <h1>逕流廢水計畫 (Construction Site Runoff Plan)</h1>
-  <span>合理化公式 Q=CIA · Stokes 沉砂池 · 防治計畫要項</span>
+  <h1>逕流廢水計畫（Runoff & Sedimentation）</h1>
+  <span>合理化公式 · Sherman 降雨強度 · Stokes 沉砂池設計 · 計算書 PDF 匯出</span>
 </header>
 <main>
-  <div class="tabs">
-    <div class="tab active" onclick="sw('flow')">逕流量估算</div>
-    <div class="tab" onclick="sw('basin')">沉砂池設計</div>
-    <div class="tab" onclick="sw('plan')">防治計畫要項</div>
-  </div>
 
-  <div id="panel-flow" class="panel active">
-  <div class="grid">
-    <div class="card">
-      <h2>逕流量計算（合理化公式）</h2>
-      <div class="row2">
-        <div><label>集水區面積 A (ha)</label><input id="f-A" type="number" value="0.5" step="0.05"></div>
-        <div><label>逕流係數 C</label>
-          <select id="f-C">
-            <option value="0.90">裸露/工地 0.90</option>
-            <option value="0.75">礫石停車場 0.75</option>
-            <option value="0.65">草地 0.65</option>
-            <option value="0.50">樹林 0.50</option>
-            <option value="0.95">瀝青鋪面 0.95</option>
-            <option value="custom">自訂</option>
-          </select>
-        </div>
-      </div>
-      <div id="f-Ccustom" style="display:none">
-        <label>自訂 C</label><input id="f-Cval" type="number" value="0.8" step="0.01">
-      </div>
-      <div class="row2">
-        <div><label>重現期（僅供參考）</label>
-          <select id="f-T"><option value="2">2年</option><option value="5">5年</option>
-            <option value="10" selected>10年</option><option value="25">25年</option></select>
-        </div>
-        <div><label>集流時間 tc (min)</label><input id="f-tc" type="number" value="15"></div>
-      </div>
-      <label>設計雨強 I (mm/hr)（0=使用Sherman公式）</label>
-      <input id="f-I" type="number" value="0" step="1" placeholder="0=使用公式">
-      <label>Sherman公式係數 a（I=a/(tc+b)^c，b=9,c=0.65）</label>
-      <input id="f-a" type="number" value="1600">
-      <button onclick="calcFlow()">計算逕流量</button>
-    </div>
-    <div class="card">
-      <h2>逕流量結果</h2>
-      <div id="f-result"><p style="color:#888">尚未計算</p></div>
-      <details class="proc" id="f-proc-box" style="display:none">
-        <summary>📋 計算過程（供第三方檢核）</summary>
-        <pre id="f-proc-text"></pre>
-      </details>
+<div class="print-header" id="printHeader">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <svg width="44" height="44" viewBox="0 0 44 44" fill="none">
+      <rect x="2" y="12" width="9" height="28" rx="1" fill="#0b1f3a"/>
+      <rect x="14" y="6" width="9" height="34" rx="1" fill="#0b1f3a"/>
+      <rect x="26" y="16" width="7" height="24" rx="1" fill="#0b1f3a"/>
+      <rect x="33" y="22" width="7" height="18" rx="1" fill="#0b1f3a"/>
+      <path d="M2 42 Q22 36 40 42" stroke="#c9a14a" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+    </svg>
+    <div>
+      <div style="font-size:10px;letter-spacing:.12em;color:#9a7b2a;font-weight:700;">STRUCTURAL ENGINEERING</div>
+      <div style="font-size:18px;font-weight:700;color:#0b1f3a;">儒鴻結構技師事務所</div>
     </div>
   </div>
+  <div style="text-align:right;font-size:11px;color:#555;line-height:1.8;">
+    <div style="font-size:14px;font-weight:700;color:#0b1f3a;">逕流廢水計畫計算書</div>
+    <div id="ph-docno"></div><div id="ph-date"></div>
   </div>
+</div>
 
-  <div id="panel-basin" class="panel">
-  <div class="grid">
-    <div class="card">
-      <h2>沉砂池設計（Stokes法）</h2>
-      <label>設計流量 Q (m³/s)</label>
-      <input id="b-Q" type="number" value="0.05" step="0.005">
-      <div class="row2">
-        <div><label>目標沉降粒徑 d (mm)</label>
-          <select id="b-d">
-            <option value="0.02">0.02mm（細粉砂）</option>
-            <option value="0.05" selected>0.05mm（粗粉砂）</option>
-            <option value="0.1">0.1mm（細砂）</option>
-            <option value="0.2">0.2mm（中砂）</option>
-          </select>
-        </div>
-        <div><label>水溫 (°C)</label><input id="b-T" type="number" value="25"></div>
-      </div>
-      <div class="row2">
-        <div><label>長寬比 L/W（建議2~4）</label><input id="b-LW" type="number" value="3" step="0.5"></div>
-        <div><label>有效深度 H (m)</label><input id="b-H" type="number" value="1.5" step="0.1"></div>
-      </div>
-      <label>安全係數 FS（建議1.5~2.0）</label>
-      <input id="b-FS" type="number" value="1.75" step="0.25">
-      <button onclick="calcBasin()">計算沉砂池</button>
-    </div>
-    <div class="card">
-      <h2>沉砂池結果</h2>
-      <div id="b-result"><p style="color:#888">尚未計算</p></div>
-      <details class="proc" id="b-proc-box" style="display:none">
-        <summary>📋 計算過程（供第三方檢核）</summary>
-        <pre id="b-proc-text"></pre>
-      </details>
-    </div>
+<div class="proj-section no-print" id="projSection" style="display:none;">
+  <h3>📋 計算書資訊（列印時顯示於表頭）</h3>
+  <div class="proj-grid">
+    <div><label>工程名稱</label><input id="pj-name" type="text" placeholder="XX大樓新建工程"></div>
+    <div><label>工程位置</label><input id="pj-loc" type="text" placeholder="台北市XX區XX路X號"></div>
+    <div><label>施工廠商</label><input id="pj-contractor" type="text" placeholder="宏儒營造有限公司"></div>
+    <div><label>計算者</label><input id="pj-calc" type="text" placeholder="姓名 / 技師字號"></div>
+    <div><label>審核者</label><input id="pj-review" type="text" placeholder="姓名 / 技師字號"></div>
+    <div><label>日期</label><input id="pj-date" type="date"></div>
+    <div><label>文件編號</label><input id="pj-docno" type="text" placeholder="JRH-RO-001"></div>
   </div>
-  </div>
+</div>
+<div style="display:none;" id="projPrintTable">
+  <table style="margin-bottom:14px;font-size:12px;">
+    <tr><th style="width:18%;background:#f0f0f0">工程名稱</th><td id="pp-name" colspan="3"></td></tr>
+    <tr><th style="background:#f0f0f0">工程位置</th><td id="pp-loc" colspan="3"></td></tr>
+    <tr><th style="background:#f0f0f0">施工廠商</th><td id="pp-contractor"></td><th style="background:#f0f0f0">計算者</th><td id="pp-calc"></td></tr>
+    <tr><th style="background:#f0f0f0">審核者</th><td id="pp-review"></td><th style="background:#f0f0f0">日期</th><td id="pp-date"></td></tr>
+  </table>
+</div>
 
-  <div id="panel-plan" class="panel">
-  <div class="card" style="max-width:800px">
-    <h2>逕流廢水防治計畫要項</h2>
-    <div class="sec">法令依據</div>
-    <ul class="chk">
-      <li>水土保持法§12：開挖面積>0.5ha應擬具水保計畫</li>
-      <li>建築法§70-1：施工中逕流廢水應設截水溝及沉砂池</li>
-      <li>水污染防治法§14：工地廢水不得逕排入水體</li>
-    </ul>
-    <div class="sec">周界截流措施</div>
-    <ul class="chk">
-      <li>周界截水溝（開挖前先設，斷面依設計流量）</li>
-      <li>進出口洗車台（40cm礫石+斜坡板）</li>
-      <li>施工圍籬底部封閉防地表水外溢</li>
-    </ul>
-    <div class="sec">沉砂池操作維護</div>
-    <ul class="chk">
-      <li>大雨後24hr內清除積泥（超過池深1/3需清除）</li>
-      <li>出水口設溢流管（φ≥100mm）</li>
-      <li>施工日誌每日記錄降雨量及水位</li>
-    </ul>
+<div class="tabs no-print">
+  <div class="tab active" id="tab-ro" onclick="switchTab('ro')">逕流量計算</div>
+  <div class="tab" id="tab-sd" onclick="switchTab('sd')">沉砂池設計</div>
+</div>
+
+<!-- ===== 逕流量 ===== -->
+<div id="panel-ro" class="panel active">
+<div class="grid">
+  <div class="card no-print">
+    <h2>逕流量計算輸入（合理化公式）</h2>
+    <div class="sec">集水區</div>
+    <label>集水面積 A (公頃, ha)</label>
+    <input id="ro-A" type="number" value="0.5" step="0.01">
+    <label>逕流係數 C</label>
+    <select id="ro-C">
+      <option value="0.9">硬鋪面/屋頂 → C=0.90</option>
+      <option value="0.8">瀝青/混凝土 → C=0.80</option>
+      <option value="0.6" selected>裸露土方 → C=0.60</option>
+      <option value="0.4">草地（坡度≤2%）→ C=0.40</option>
+      <option value="0.35">林地 → C=0.35</option>
+    </select>
+    <label>自訂逕流係數（覆蓋上方選擇，留空則用選項值）</label>
+    <input id="ro-C-custom" type="number" placeholder="0.00 ~ 1.00" step="0.01" min="0" max="1">
+    <div class="sec">降雨強度（Sherman 公式）</div>
+    <label>集流時間 tc (分鐘)</label>
+    <input id="ro-tc" type="number" value="10" step="1">
+    <label>地區參數 a</label>
+    <input id="ro-a" type="number" value="2000" step="50">
+    <label>地區參數 b</label>
+    <input id="ro-b" type="number" value="10" step="1">
+    <label>地區參數 c</label>
+    <input id="ro-c" type="number" value="0.7" step="0.05">
+    <div class="note">Sherman 公式：I = a / (tc + b)^c (mm/hr)。台北市參考：a=1914, b=5.5, c=0.72（10年重現期）。</div>
+    <button class="calc-btn" onclick="calcRunoff()">計算逕流量</button>
   </div>
+  <div class="card">
+    <h2>逕流量計算結果</h2>
+    <div id="ro-result"><p style="color:#888">尚未計算</p></div>
+    <button class="pro-btn no-print" onclick="openPro()" id="ro-pro-btn" style="display:none;">📄 產出正式計算書 PDF（NT$600）</button>
+    <div class="pro-lock-notice no-print" id="ro-lock" style="display:none;">🔒 計算完成後可產出正式計算書（NT$600/份）</div>
+    <details class="proc no-print" id="ro-proc" style="display:none;">
+      <summary>📋 計算過程（供第三方檢核）</summary>
+      <pre id="ro-proc-text"></pre>
+    </details>
   </div>
+</div>
+</div>
+
+<!-- ===== 沉砂池 ===== -->
+<div id="panel-sd" class="panel">
+<div class="grid">
+  <div class="card no-print">
+    <h2>沉砂池設計輸入（Stokes 定律）</h2>
+    <div class="sec">設計流量</div>
+    <label>設計流量 Q (m³/s)（可由逕流量計算帶入）</label>
+    <input id="sd-Q" type="number" value="0.05" step="0.001">
+    <label>安全係數 FS</label>
+    <input id="sd-FS" type="number" value="2.0" step="0.1">
+    <div class="sec">顆粒特性</div>
+    <div class="row2">
+      <div><label>顆粒粒徑 d (mm)</label><input id="sd-d" type="number" value="0.1" step="0.01"></div>
+      <div><label>顆粒比重 Gs</label><input id="sd-Gs" type="number" value="2.65" step="0.05"></div>
+    </div>
+    <div class="sec">水力條件</div>
+    <div class="row2">
+      <div><label>水溫 T (°C)</label><input id="sd-T" type="number" value="20" step="1"></div>
+      <div><label>長寬比 L/W</label><input id="sd-LW" type="number" value="3" step="0.5"></div>
+    </div>
+    <label>設計水深 h (m)</label>
+    <input id="sd-h" type="number" value="1.0" step="0.1">
+    <button class="calc-btn" onclick="calcSedimentation()">設計沉砂池</button>
+    <div class="note">Stokes 沉降速度：vs = (Gs-1)·g·d²/(18·ν)。所需表面積：As = Q·FS/vs。超越速度條件確保顆粒能沉降。</div>
+  </div>
+  <div class="card">
+    <h2>沉砂池設計結果</h2>
+    <div id="sd-result"><p style="color:#888">尚未計算</p></div>
+    <button class="pro-btn no-print" onclick="openPro()" id="sd-pro-btn" style="display:none;">📄 產出正式計算書 PDF（NT$600）</button>
+    <div class="pro-lock-notice no-print" id="sd-lock" style="display:none;">🔒 計算完成後可產出正式計算書（NT$600/份）</div>
+    <details class="proc no-print" id="sd-proc" style="display:none;">
+      <summary>📋 計算過程（供第三方檢核）</summary>
+      <pre id="sd-proc-text"></pre>
+    </details>
+  </div>
+</div>
+</div>
+
+<div class="print-footer">
+  <div>⚠ 免責聲明：本計算書為輔助計算工具產出，設計結果仍須由依法登記之技師簽證並負最終法律責任。儒鴻結構技師事務所不對本計算書之誤用負任何責任。</div>
+  <div style="margin-top:4px;">© 儒鴻結構技師事務所 · 逕流廢水計畫計算書 · 合理化公式 / Stokes 定律</div>
+</div>
 </main>
+
+<div class="modal-bg" id="proModal" style="display:none;" onclick="closePro(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="price-badge">NT$600 / 份</div>
+    <h3>📄 產出正式計算書</h3>
+    <p>免費計算不限次數；確認結果無誤後，付款取得本月兌換碼，輸入即可下載可送審的 PDF 計算書。</p>
+    <a href="https://ko-fi.com/yjchen0830" target="_blank" class="ko-btn">☕ 前往 Ko-fi 付款（NT$600）</a>
+    <label style="font-size:12.5px;color:#555;display:block;margin-bottom:6px;">輸入本月兌換碼：</label>
+    <div class="code-row">
+      <input id="code-input" type="text" placeholder="XXXX-XXXX" style="text-transform:uppercase;letter-spacing:.1em;">
+      <button onclick="verifyCode()">驗證</button>
+    </div>
+    <div id="code-msg" style="font-size:12.5px;margin-top:6px;min-height:18px;"></div>
+    <div style="border-top:1px solid #eee;margin:16px 0;font-size:11.5px;color:#999;line-height:1.7;">
+      付款後 Ko-fi 的「感謝訊息」中會顯示本月兌換碼。<br>員工免費使用，請聯繫管理員取得兌換碼。
+    </div>
+    <button class="cancel-btn" onclick="document.getElementById('proModal').style.display='none'">取消</button>
+  </div>
+</div>
+
 <script>
-function sw(id){
-  document.querySelectorAll('.tab').forEach((t,i)=>t.classList.toggle('active',['flow','basin','plan'][i]===id));
-  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
-  document.getElementById('panel-'+id).classList.add('active');
+function getMonthlyCode(){
+  var d=new Date();
+  var ym=String(d.getFullYear())+String(d.getMonth()+1).padStart(2,'0');
+  var secret='jrh_structural_runoff';
+  var s=secret+ym;
+  var h=0;
+  for(var i=0;i<s.length;i++){h=Math.imul(31,h)+s.charCodeAt(i)|0;}
+  var pos=Math.abs(h);
+  var chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  var code='';var tmp=pos;
+  for(var j=0;j<4;j++){code+=chars[tmp%chars.length];tmp=Math.floor(tmp/chars.length);}
+  code+='-';tmp=pos^0xDEAD;
+  for(var j=0;j<4;j++){code+=chars[tmp%chars.length];tmp=Math.floor(tmp/chars.length);}
+  return code;
 }
-document.getElementById('f-C').addEventListener('change',function(){
-  document.getElementById('f-Ccustom').style.display=this.value==='custom'?'':'none';
-});
-
-function calcFlow(){
-  const A=+document.getElementById('f-A').value;
-  const Csel=document.getElementById('f-C').value;
-  const C=Csel==='custom'?+document.getElementById('f-Cval').value:parseFloat(Csel);
-  const tc=+document.getElementById('f-tc').value;
-  const Iinput=+document.getElementById('f-I').value;
-  const a=+document.getElementById('f-a').value;
-
-  const I_formula=a/Math.pow(tc+9,0.65);
-  const I=Iinput>0?Iinput:I_formula;
-  const Q=C*I*A/360;
-
-  document.getElementById('f-result').innerHTML=`
-    <table>
-      <tr><td>集水面積 A (ha)</td><td>${A}</td></tr>
-      <tr><td>逕流係數 C</td><td>${C}</td></tr>
-      <tr><td>集流時間 tc (min)</td><td>${tc}</td></tr>
-      <tr><td>雨強 I (mm/hr)</td><td>${I.toFixed(2)}</td></tr>
-      <tr><td><strong>設計流量 Q (m³/s)</strong></td><td><strong>${Q.toFixed(5)}</strong></td></tr>
-      <tr><td>Q (L/s)</td><td>${(Q*1000).toFixed(2)}</td></tr>
-      <tr><td>Q (m³/min)</td><td>${(Q*60).toFixed(4)}</td></tr>
-    </table>`;
-
-  const proc=`════════════════════════════════════════
-逕流量估算 計算過程
-方法：合理化公式（Rational Method）
-════════════════════════════════════════
-
-【一、輸入參數】
-  集水面積 A = ${A} ha
-  逕流係數 C = ${C}
-  集流時間 tc = ${tc} min
-
-【二、設計雨強 I（mm/hr）】
-${Iinput>0?`  直接輸入 I = ${Iinput} mm/hr`:`  Sherman 公式：I = a / (tc+b)^c
-  I = ${a} / (${tc}+9)^0.65
-    = ${a} / ${Math.pow(tc+9,0.65).toFixed(4)}
-    = ${I_formula.toFixed(4)} mm/hr
-  採用 I = ${I.toFixed(4)} mm/hr`}
-
-【三、合理化公式 Q = C × I × A / 360】
-  Q = ${C} × ${I.toFixed(4)} × ${A} / 360
-    = ${(C*I*A).toFixed(5)} / 360
-    = ${Q.toFixed(6)} m³/s
-    = ${(Q*1000).toFixed(3)} L/s
-    = ${(Q*60).toFixed(5)} m³/min
-
-  公式說明：
-    Q（m³/s）= C × I（mm/hr）× A（ha）/ 360
-    換算係數 360 = 3600s/hr × 10（1ha=10,000m²，1mm=0.001m → 10m³/(ha·mm)）
-
-【四、注意事項】
-  • 合理化公式假設：均勻降雨、穩定流、集水區面積不超過 80 ha
-  • 設計重現期建議：施工臨時設施取 10 年（最大 25 年）
-  • 實際設計應依當地縣市水利主管機關公告之 IDF 曲線查取雨強`;
-
-  document.getElementById('f-proc-text').textContent=proc;
-  document.getElementById('f-proc-box').style.display='';
+function switchTab(id){
+  ['ro','sd'].forEach(function(t){
+    document.getElementById('tab-'+t).classList.toggle('active',t===id);
+    document.getElementById('panel-'+t).classList.toggle('active',t===id);
+  });
+}
+function openPro(){document.getElementById('proModal').style.display='flex';document.getElementById('code-input').value='';document.getElementById('code-msg').textContent='';}
+function closePro(e){if(e.target===document.getElementById('proModal'))document.getElementById('proModal').style.display='none';}
+function verifyCode(){
+  var entered=document.getElementById('code-input').value.trim().toUpperCase();
+  var valid=getMonthlyCode();
+  var msg=document.getElementById('code-msg');
+  if(entered===valid){
+    msg.style.color='#1a7d3a';msg.textContent='✓ 兌換碼正確！正在開啟計算書…';
+    setTimeout(function(){document.getElementById('proModal').style.display='none';unlockPrint();},800);
+  } else {
+    msg.style.color='#c0392b';msg.textContent='✗ 兌換碼不正確，請確認付款後 Ko-fi 訊息中的本月兌換碼。';
+  }
+}
+function unlockPrint(){
+  var f=function(id){return document.getElementById(id)?document.getElementById(id).value:'';};
+  document.getElementById('pp-name').textContent=f('pj-name')||'（未填寫）';
+  document.getElementById('pp-loc').textContent=f('pj-loc')||'（未填寫）';
+  document.getElementById('pp-contractor').textContent=f('pj-contractor')||'（未填寫）';
+  document.getElementById('pp-calc').textContent=f('pj-calc')||'（未填寫）';
+  document.getElementById('pp-review').textContent=f('pj-review')||'（未填寫）';
+  document.getElementById('pp-date').textContent=f('pj-date')||'（未填寫）';
+  document.getElementById('ph-docno').textContent='文件編號：'+(f('pj-docno')||'—');
+  document.getElementById('ph-date').textContent='日期：'+(f('pj-date')||new Date().toLocaleDateString('zh-TW'));
+  document.getElementById('projPrintTable').style.display='';
+  window.print();
 }
 
-function calcBasin(){
-  const Q=+document.getElementById('b-Q').value;
-  const d_mm=parseFloat(document.getElementById('b-d').value);
-  const d=d_mm/1000;
-  const T=+document.getElementById('b-T').value;
-  const LW=+document.getElementById('b-LW').value;
-  const H=+document.getElementById('b-H').value;
-  const FS=+document.getElementById('b-FS').value;
+function calcRunoff(){
+  var A=parseFloat(document.getElementById('ro-A').value);
+  var C_sel=parseFloat(document.getElementById('ro-C').value);
+  var C_cus=document.getElementById('ro-C-custom').value;
+  var C=C_cus!==''?parseFloat(C_cus):C_sel;
+  var tc=parseFloat(document.getElementById('ro-tc').value);
+  var a=parseFloat(document.getElementById('ro-a').value);
+  var b_p=parseFloat(document.getElementById('ro-b').value);
+  var c=parseFloat(document.getElementById('ro-c').value);
 
-  const mu=1.002e-3*Math.exp(-0.02337*(T-20));
-  const gs=2650*9.81;
-  const gw=1000*9.81;
-  const vs=(gs-gw)*d*d*9.81/(18*mu);
+  var I=a/Math.pow(tc+b_p,c); // mm/hr
+  var Q=C*I*A/360; // m³/s  (合理化公式 Q=CIA/360 for A in ha, I in mm/hr)
 
-  const As=Q*FS/vs;
-  const W=Math.sqrt(As/LW);
-  const Llen=W*LW;
-  const V=As*H;
-  const t_res=V/Q/60;
+  // 自動帶入沉砂池
+  document.getElementById('sd-Q').value=Q.toFixed(4);
 
-  document.getElementById('b-result').innerHTML=`
-    <table>
-      <tr><td>沉降粒徑 d (mm)</td><td>${d_mm}</td></tr>
-      <tr><td>動黏滯係數 μ (Pa·s)</td><td>${mu.toExponential(3)}</td></tr>
-      <tr><td>沉降速度 vs (mm/s)</td><td>${(vs*1000).toFixed(5)}</td></tr>
-      <tr><td><strong>長 L (m)</strong></td><td><strong>${Llen.toFixed(2)}</strong></td></tr>
-      <tr><td><strong>寬 W (m)</strong></td><td><strong>${W.toFixed(2)}</strong></td></tr>
-      <tr><td><strong>深 H (m)</strong></td><td><strong>${H}</strong></td></tr>
-      <tr><td>容積 V (m³)</td><td>${V.toFixed(2)}</td></tr>
-      <tr><td>水力停留時間 HRT (min)</td><td>${t_res.toFixed(1)}</td></tr>
-    </table>`;
+  var proc=
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '  逕流量計算過程（合理化公式）\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+
+    '【輸入】\n'+
+    '  A='+A+' ha, C='+C+', tc='+tc+' min\n'+
+    '  Sherman：I = '+a+' / (tc + '+b_p+')^'+c+'\n\n'+
+    '【一】降雨強度（Sherman 公式）\n'+
+    '  I = a / (tc+b)^c\n'+
+    '    = '+a+' / ('+tc+'+'+b_p+')^'+c+'\n'+
+    '    = '+a+' / '+Math.pow(tc+b_p,c).toFixed(4)+'\n'+
+    '    = '+I.toFixed(2)+' mm/hr\n\n'+
+    '【二】逕流量（合理化公式）\n'+
+    '  Q = C · I · A / 360\n'+
+    '    = '+C+' × '+I.toFixed(2)+' × '+A+' / 360\n'+
+    '    = '+Q.toFixed(4)+' m³/s\n'+
+    '    = '+(Q*1000).toFixed(2)+' L/s\n\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '  合理化公式 Q=CIA/360（A單位公頃，I單位mm/hr）\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
 
-  const proc=`════════════════════════════════════════
-沉砂池設計 計算過程
-方法：Stokes 沉降速度法
-════════════════════════════════════════
+  document.getElementById('ro-result').innerHTML=
+    '<table>'+
+    '<tr><th>項目</th><th>數值</th></tr>'+
+    '<tr><td>集水面積 A (ha)</td><td>'+A+'</td></tr>'+
+    '<tr><td>逕流係數 C</td><td>'+C+'</td></tr>'+
+    '<tr><td>集流時間 tc (min)</td><td>'+tc+'</td></tr>'+
+    '<tr><td>降雨強度 I (mm/hr)</td><td>'+I.toFixed(2)+'</td></tr>'+
+    '<tr><td>設計逕流量 Q (m³/s)</td><td>'+Q.toFixed(4)+'</td></tr>'+
+    '<tr><td>設計逕流量 Q (L/s)</td><td>'+(Q*1000).toFixed(2)+'</td></tr>'+
+    '</table>'+
+    '<p style="font-size:12px;color:#1a7d3a;margin-top:8px;">✓ 流量已自動帶入「沉砂池設計」頁</p>';
 
-【一、輸入參數】
-  設計流量 Q = ${Q} m³/s
-  目標沉降粒徑 d = ${d_mm} mm = ${d} m
-  水溫 T = ${T} °C
-  長寬比 L/W = ${LW}
-  有效深度 H = ${H} m
-  安全係數 FS = ${FS}
+  document.getElementById('ro-proc-text').textContent=proc;
+  document.getElementById('ro-proc').style.display='';
+  document.getElementById('projSection').style.display='';
+  document.getElementById('ro-lock').style.display='none';
+  document.getElementById('ro-pro-btn').style.display='';
+}
 
-【二、動黏滯係數 μ（水溫修正）】
-  μ = 1.002×10⁻³ × exp[-0.02337×(T-20)]
-    = 1.002×10⁻³ × exp[-0.02337×(${T}-20)]
-    = 1.002×10⁻³ × exp(${(-0.02337*(T-20)).toFixed(4)})
-    = 1.002×10⁻³ × ${Math.exp(-0.02337*(T-20)).toFixed(5)}
-    = ${mu.toExponential(5)} Pa·s
+function calcSedimentation(){
+  var Q=parseFloat(document.getElementById('sd-Q').value);
+  var FS=parseFloat(document.getElementById('sd-FS').value);
+  var d_mm=parseFloat(document.getElementById('sd-d').value);
+  var Gs=parseFloat(document.getElementById('sd-Gs').value);
+  var T=parseFloat(document.getElementById('sd-T').value);
+  var LW=parseFloat(document.getElementById('sd-LW').value);
+  var h=parseFloat(document.getElementById('sd-h').value);
 
-【三、Stokes 沉降速度 vs】
-  公式：vs = (γs-γw) × d² × g / (18 × μ)
-  γs = ρs × g = 2650 × 9.81 = ${gs.toFixed(0)} N/m³（土顆粒，Gs=2.65）
-  γw = ρw × g = 1000 × 9.81 = ${gw.toFixed(0)} N/m³
+  var d=d_mm/1000; // m
+  var g=9.81;
+  // 動力黏度 ν (m²/s) at temperature T (Sutherland approximation for water)
+  var nu=(1.792e-6)/(1+0.033*(T-0)+(0.000221*(T-0)*(T-0)));
+  // 更準確近似
+  nu=1e-6*(1.79/(1+0.03368*T+0.000221*T*T));
 
-  vs = (${gs.toFixed(0)}-${gw.toFixed(0)}) × ${d}² × 9.81 / (18 × ${mu.toExponential(4)})
-     = ${(gs-gw).toFixed(0)} × ${(d*d).toExponential(4)} × 9.81 / ${(18*mu).toExponential(4)}
-     = ${((gs-gw)*d*d*9.81).toExponential(4)} / ${(18*mu).toExponential(4)}
-     = ${vs.toExponential(5)} m/s
-     = ${(vs*1000).toFixed(5)} mm/s
-  （Stokes 定律適用條件：Re < 1，層流沉降）
-  Re = ρw×vs×d/μ = 1000×${vs.toExponential(3)}×${d}/${mu.toExponential(3)} = ${(1000*vs*d/mu).toFixed(4)}（應<1）
+  var vs=(Gs-1)*g*d*d/(18*nu); // m/s Stokes
+  var As=Q*FS/vs;               // m² 所需表面積
 
-【四、沉砂池表面積 As】
-  理論：水面流速 ≤ vs，即 Q/As ≤ vs → As ≥ Q/vs
-  含安全係數：
-  As = Q × FS / vs
-     = ${Q} × ${FS} / ${vs.toExponential(5)}
-     = ${As.toFixed(4)} m²
+  var W=Math.sqrt(As/LW);       // 寬度 m
+  var L=LW*W;                   // 長度 m
+  var Vol=L*W*h;                // 容積 m³
+  var HRT=Vol/Q/60;             // 水力停留時間 min
+  var vh=Q/(W*h);               // 水平流速 m/s (overflow velocity)
 
-【五、沉砂池尺寸（長寬比 L/W = ${LW}）】
-  W = √(As / (L/W)) = √(${As.toFixed(4)} / ${LW})
-    = √${(As/LW).toFixed(4)} = ${W.toFixed(3)} m
+  var proc=
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '  沉砂池設計計算過程（Stokes 定律）\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n\n'+
+    '【輸入】\n'+
+    '  Q='+Q+' m³/s, FS='+FS+', d='+d_mm+' mm, Gs='+Gs+'\n'+
+    '  水溫 T='+T+'°C, L/W='+LW+', 水深 h='+h+' m\n\n'+
+    '【一】動力黏度 ν（水溫 '+T+'°C）\n'+
+    '  ν = '+nu.toExponential(4)+' m²/s\n'+
+    '  （採近似公式 ν=1.792E-6/(1+0.03368T+0.000221T²)）\n\n'+
+    '【二】Stokes 沉降速度\n'+
+    '  vs = (Gs-1)·g·d² / (18·ν)\n'+
+    '     = ('+Gs+'-1)×'+g+'×'+d+'² / (18×'+nu.toExponential(3)+')\n'+
+    '     = '+((Gs-1)*g*d*d).toExponential(4)+' / '+( 18*nu ).toExponential(4)+'\n'+
+    '     = '+vs.toFixed(5)+' m/s\n'+
+    '     = '+(vs*1000).toFixed(3)+' mm/s\n\n'+
+    '【三】所需沉砂池表面積\n'+
+    '  As = Q × FS / vs\n'+
+    '     = '+Q+' × '+FS+' / '+vs.toFixed(5)+'\n'+
+    '     = '+As.toFixed(3)+' m²\n\n'+
+    '【四】沉砂池尺寸（L/W='+LW+'）\n'+
+    '  W = √(As/'+LW+') = √('+As.toFixed(3)+'/'+LW+') = '+W.toFixed(2)+' m\n'+
+    '  L = '+LW+'×W = '+LW+'×'+W.toFixed(2)+' = '+L.toFixed(2)+' m\n'+
+    '  容積 V = L×W×h = '+L.toFixed(2)+'×'+W.toFixed(2)+'×'+h+' = '+Vol.toFixed(2)+' m³\n\n'+
+    '【五】水力驗算\n'+
+    '  HRT = V/Q/60 = '+Vol.toFixed(2)+'/'+Q+'/60 = '+HRT.toFixed(1)+' min\n'+
+    '  水平流速 vh = Q/(W×h) = '+Q+'/('+W.toFixed(2)+'×'+h+') = '+vh.toFixed(4)+' m/s\n'+
+    '  （vh << vs 表示沉降有效）\n\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '  Stokes Law；水土保持技術規範（行政院農業部）\n'+
+    '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━';
 
-  L = W × L/W = ${W.toFixed(3)} × ${LW} = ${Llen.toFixed(3)} m
+  document.getElementById('sd-result').innerHTML=
+    '<table>'+
+    '<tr><th>項目</th><th>數值</th></tr>'+
+    '<tr><td>動力黏度 ν (m²/s)</td><td>'+nu.toExponential(3)+'</td></tr>'+
+    '<tr><td>Stokes 沉降速度 vs (mm/s)</td><td>'+(vs*1000).toFixed(3)+'</td></tr>'+
+    '<tr><td>所需表面積 As (m²)</td><td>'+As.toFixed(3)+'</td></tr>'+
+    '<tr><td>池寬 W (m)</td><td>'+W.toFixed(2)+'</td></tr>'+
+    '<tr><td>池長 L (m)</td><td>'+L.toFixed(2)+'</td></tr>'+
+    '<tr><td>設計水深 h (m)</td><td>'+h+'</td></tr>'+
+    '<tr><td>容積 V (m³)</td><td>'+Vol.toFixed(2)+'</td></tr>'+
+    '<tr><td>水力停留時間 HRT (min)</td><td>'+HRT.toFixed(1)+'</td></tr>'+
+    '<tr><td>水平流速 vh (m/s)</td><td>'+vh.toFixed(4)+'</td></tr>'+
+    '</table>';
 
-  有效容積 V = As × H = ${As.toFixed(4)} × ${H} = ${V.toFixed(3)} m³
+  document.getElementById('sd-proc-text').textContent=proc;
+  document.getElementById('sd-proc').style.display='';
+  document.getElementById('projSection').style.display='';
+  document.getElementById('sd-lock').style.display='none';
+  document.getElementById('sd-pro-btn').style.display='';
+}
 
-  水力停留時間 HRT = V / Q = ${V.toFixed(3)} / ${Q} = ${(V/Q).toFixed(1)} s = ${t_res.toFixed(2)} min
-
-【六、設計建議】
-  沉砂池尺寸 = ${Llen.toFixed(1)} m（長）× ${W.toFixed(1)} m（寬）× ${H} m（深）
-  清泥標準：積泥超過 ${(H*0.33).toFixed(2)} m（有效深1/3）或雨後24hr內清除`;
-
-  document.getElementById('b-proc-text').textContent=proc;
-  document.getElementById('b-proc-box').style.display='';
+if(location.search.includes('admin=1')){
+  var d=document.createElement('div');
+  d.style.cssText='position:fixed;bottom:10px;right:10px;background:#0b1f3a;color:#e0bf6e;padding:10px 16px;border-radius:8px;font-size:13px;font-family:monospace;z-index:999;';
+  d.textContent='本月兌換碼：'+getMonthlyCode();
+  document.body.appendChild(d);
 }
 </script>
 </body>
