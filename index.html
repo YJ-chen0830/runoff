@@ -51,6 +51,16 @@
   .proj-section h3{margin:0 0 12px;color:var(--navy);font-size:14px;font-weight:700;}
   .proj-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
   .pro-lock-notice{background:#fff8e6;border:1px solid var(--gold);border-radius:8px;padding:12px 16px;font-size:13px;color:#7a5c00;margin-top:10px;}
+  /* ── Mobile Tab System ── */
+  .mob-tabs{display:none;}
+  @media screen and (max-width:767px){
+    .mob-tabs{display:flex;background:var(--bg);border-bottom:2px solid var(--line);margin:0 -20px 0;padding:0 20px;}
+    .mob-tab{flex:1;padding:11px 4px;text-align:center;font-size:13.5px;font-weight:700;color:#888;cursor:pointer;background:transparent;border:none;border-bottom:3px solid transparent;transition:color .15s,border-color .15s;}
+    .mob-tab.active{color:var(--navy);border-bottom-color:var(--gold);}
+    .grid{display:block;}
+    .grid>.card{display:none;}
+    .grid>.card.mob-active{display:block;}
+  }
   @media print{
     header,.tabs,.no-print{display:none!important;}
     details.proc{display:block!important;margin-top:16px;border:1px solid #bbb;border-radius:6px;break-inside:avoid;}
@@ -128,8 +138,12 @@
 
 <!-- ===== 逕流量 ===== -->
 <div id="panel-ro" class="panel active">
+<div class="mob-tabs">
+  <button class="mob-tab active" onclick="switchMobTab('ro-in',this)">📋 輸入參數</button>
+  <button class="mob-tab" id="mobTab-ro-r" onclick="switchMobTab('ro-r',this)">📊 計算結果</button>
+</div>
 <div class="grid">
-  <div class="card no-print">
+  <div class="card no-print mob-active" data-tab="ro-in">
     <h2>逕流量計算輸入（合理化公式）</h2>
     <div class="sec">集水區</div>
     <label>集水面積 A (公頃, ha)</label>
@@ -156,7 +170,7 @@
     <div class="note">Sherman 公式：I = a / (tc + b)^c (mm/hr)。台北市參考：a=1914, b=5.5, c=0.72（10年重現期）。</div>
     <button class="calc-btn" onclick="calcRunoff()">計算逕流量</button>
   </div>
-  <div class="card">
+  <div class="card" data-tab="ro-r">
     <h2>逕流量計算結果</h2>
     <div id="ro-result"><p style="color:#888">尚未計算</p></div>
     <button class="pro-btn no-print" onclick="openPro()" id="ro-pro-btn">📄 產出正式計算書 PDF</button>
@@ -170,8 +184,12 @@
 
 <!-- ===== 沉砂池 ===== -->
 <div id="panel-sd" class="panel">
+<div class="mob-tabs">
+  <button class="mob-tab active" onclick="switchMobTab('sd-in',this)">📋 輸入參數</button>
+  <button class="mob-tab" id="mobTab-sd-r" onclick="switchMobTab('sd-r',this)">📊 計算結果</button>
+</div>
 <div class="grid">
-  <div class="card no-print">
+  <div class="card no-print mob-active" data-tab="sd-in">
     <h2>沉砂池設計輸入（Stokes 定律）</h2>
     <div class="sec">設計流量</div>
     <label>設計流量 Q (m³/s)（可由逕流量計算帶入）</label>
@@ -193,7 +211,7 @@
     <button class="calc-btn" onclick="calcSedimentation()">設計沉砂池</button>
     <div class="note">Stokes 沉降速度：vs = (Gs-1)·g·d²/(18·ν)。所需表面積：As = Q·FS/vs。超越速度條件確保顆粒能沉降。</div>
   </div>
-  <div class="card">
+  <div class="card" data-tab="sd-r">
     <h2>沉砂池設計結果</h2>
     <div id="sd-result"><p style="color:#888">尚未計算</p></div>
     <button class="pro-btn no-print" onclick="openPro()" id="sd-pro-btn">📄 產出正式計算書 PDF</button>
@@ -246,6 +264,17 @@ function getMonthlyCode(){
   for(var j=0;j<4;j++){code+=chars[tmp%chars.length];tmp=Math.floor(tmp/chars.length);}
   return code;
 }
+// Domain lock
+(function(){var h=location.hostname;var ok=!h||h==='localhost'||h==='127.0.0.1'||h==='yj-chen0830.github.io';if(!ok){document.body.innerHTML='<div style="padding:60px 30px;text-align:center;font-family:sans-serif;"><h2 style="color:#0b1f3a;">⚠ 未授權使用</h2><p>本工具版權屬於 <strong>儒鴻結構技師事務所</strong>，<br>僅授權於 <a href="https://yj-chen0830.github.io">yj-chen0830.github.io</a> 使用。</p></div>';throw new Error('Unauthorized domain');}})();
+
+function switchMobTab(name,btn){
+  btn.parentElement.querySelectorAll('.mob-tab').forEach(function(t){t.classList.remove('active');});
+  btn.classList.add('active');
+  btn.parentElement.nextElementSibling.querySelectorAll('.card').forEach(function(c){
+    c.classList.toggle('mob-active',c.dataset.tab===name);
+  });
+}
+
 function switchTab(id){
   ['ro','sd'].forEach(function(t){
     document.getElementById('tab-'+t).classList.toggle('active',t===id);
@@ -332,6 +361,7 @@ function calcRunoff(){
   document.getElementById('ro-proc').style.display='';
   document.getElementById('projSection').style.display='';
   // ro-lock removed; pro-btn already visible
+  if(window.innerWidth<768){var b=document.getElementById('mobTab-ro-r');if(b)switchMobTab('ro-r',b);}
 }
 
 function calcSedimentation(){
@@ -409,6 +439,7 @@ function calcSedimentation(){
   document.getElementById('sd-proc').style.display='';
   document.getElementById('projSection').style.display='';
   // sd-lock removed; pro-btn already visible
+  if(window.innerWidth<768){var b=document.getElementById('mobTab-sd-r');if(b)switchMobTab('sd-r',b);}
 }
 
 if(location.search.includes('admin=1')){
