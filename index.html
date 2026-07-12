@@ -35,6 +35,8 @@
   button.pro-btn{margin-top:12px;width:100%;padding:12px;border:none;border-radius:8px;background:var(--gold);color:var(--navy);font-size:14.5px;font-weight:700;cursor:pointer;letter-spacing:.03em;transition:filter .15s,transform .1s;}
   button.pro-btn:hover{filter:brightness(1.08);}
   button.pro-btn:active{transform:scale(.98);}
+  a.chain-btn{display:block;text-align:center;margin-top:12px;width:100%;padding:12px;border:1.5px dashed var(--gold);border-radius:8px;background:#fff;color:var(--navy);font-size:13.5px;font-weight:700;text-decoration:none;box-sizing:border-box;}
+  a.chain-btn:hover{background:#fdf7ec;}
   /* result table */
   table{width:100%;border-collapse:collapse;margin-top:10px;border:1px solid var(--line);border-radius:8px;overflow:hidden;}
   th{background:var(--navy);color:#f5f3ee;font-weight:600;font-size:12px;padding:9px 10px;text-align:left;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
@@ -103,7 +105,7 @@
     .print-sig-cell{padding:9pt 10pt;border-right:1px solid #bbb;font-size:8pt;}
     .print-sig-cell:last-child{border-right:none;}
     .print-sig-cell .label{color:#888;font-size:7pt;margin-bottom:12pt;}
-    button.pro-btn,button.calc-btn{display:none!important;}
+    button.pro-btn,button.calc-btn,a.chain-btn{display:none!important;}
     @page{margin:15mm 12mm;size:A4;}
   }
   .print-header{display:none;align-items:center;justify-content:space-between;border-bottom:3px solid var(--navy);padding-bottom:12px;margin-bottom:18px;}
@@ -204,6 +206,7 @@
     <h2>逕流量計算結果</h2>
     <div id="ro-result"><p style="color:#888">尚未計算</p></div>
     <button class="pro-btn no-print" onclick="openPro()" id="ro-pro-btn">📄 產出正式計算書 PDF</button>
+    <a class="chain-btn no-print" href="https://yj-chen0830.github.io/drainage/" target="_blank" rel="noopener">➜ 前往「雨水下水道及揚程計算」工具（銜接本逕流量進行管線設計）</a>
     <details class="proc" id="ro-proc" style="display:none;">
       <summary>📋 計算過程（供第三方檢核）</summary>
       <pre id="ro-proc-text"></pre>
