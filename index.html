@@ -361,6 +361,8 @@ function calcRunoff(){
   // 自動帶入沉砂池
   document.getElementById('sd-Q').value=Q.toFixed(4);
 
+  if(window.JRH && JRH.saveOutput) JRH.saveOutput({Q_m3s:Q, A_ha:A, C:C, I_mmhr:I, tc_min:tc});
+
   var proc=
     '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '  逕流量計算過程（合理化公式）\n'+
